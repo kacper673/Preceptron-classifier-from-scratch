@@ -1,0 +1,237 @@
+#ifndef VARIABLES_H
+#define VARIABLES_H
+#include <iostream>
+#include <vector>
+
+struct Input {
+	std::vector<double> features;
+	int label;
+};
+
+#endif 
+
+
+#ifndef data_h
+#define data_h
+#include <iostream>
+#include <vector> 
+#include <string>
+#include <sstream>
+#include <fstream>
+#include "variables.h"
+
+int countSeparators(std::string, char);
+
+std::vector<Input> loadData(const std::string& filename,char);
+
+
+
+#endif 
+
+
+#ifndef perceptron_h
+#define perceptron_h
+#include <iostream>
+#include <vector>
+#include <string>
+#include <ctime>
+#include "variables.h"
+class Perceptron {
+private:
+	/*struct Input {
+		std::vector<double> features;
+		int label;
+	};*/
+
+	std::vector<double> weights;
+
+	double bias;
+	double eta;
+	double z = 0.f;
+public:
+	int output;
+	int error;
+
+	Perceptron(double Eta,std::vector<Input>);
+	void dot_product(std::vector<Input>, int input_index, bool debug);
+	void step_function();
+	void learn(std::vector<Input> data,int epochs, bool debug); //uwaga data zawiera obie klasy!!! to nie pojedynczy input
+
+	void ask(std::vector<Input> data, int input_index, bool debug,std::string label[2]);
+
+};
+
+
+#include "data.h"
+
+
+int countSeparators(std::string line, char separator) {
+
+	static bool counted = false;
+	static int n = 0;
+
+	if (!counted) {
+		
+
+		for (size_t i = 0; i < line.size(); i++) {
+			if (line[i] == separator) n++;
+		}
+
+		counted = true;
+	}
+	return n;
+}
+
+
+std::vector<Input> loadData(const std::string& filename, char separator) {
+	std::vector<Input> data;
+	std::ifstream file(filename); //do zapisywania pojedynczych skladowych input oraz jego label
+	std::string line;
+	if (!file.is_open()) {
+		std::cerr << "Nie udalo sie otworzyc pliku: " << filename << std::endl;
+	}
+	else {
+		std::cout << "Plik z danymi otworzony" << std::endl;
+	}
+
+	while (std::getline(file, line)) {
+
+		int n = countSeparators(line, separator);
+
+		if (line.empty()) continue;
+
+		std::stringstream ss(line);
+		std::string item;
+		Input example;
+
+		for (int i = 0; i < n + 1; i++) {
+			std::getline(ss, item, separator); //separator = ,
+			example.features.push_back(std::stod(item));
+		}
+
+		std::getline(ss, item, separator);
+
+		example.label = item == "Iris-setosa" ? 1 : 0;
+
+		data.push_back(example);
+	}
+
+	return data;
+}
+
+
+
+#include "perceptron.h"
+
+Perceptron::Perceptron(double Eta,std::vector<Input> data) {
+	eta = Eta;
+
+	srand(time(0));
+
+	for (size_t input_size = 0; input_size < data[0].features.size(); input_size++) { ///data[0] - pierwszy elemt przykladowy do zbadania rozmiaru wektora wag
+		double weight = ((double)rand() / RAND_MAX) * 2.0 - 1.0;
+		weights.push_back(weight);
+	}
+
+	bias = ((double)rand() / RAND_MAX) * 2.0 - 1.0;
+	
+}
+void Perceptron::dot_product(std::vector<Input> data, int input_index, bool debug) {
+	z = 0.f;
+	for (size_t i = 0; i < data[0].features.size(); i++) { //tak samo jak konstruktor, moge dac 4
+		z += data[input_index].features[i] * weights[i];
+
+		if(debug) std::cout << "Dot product no bias: " << z << std::endl;
+	}
+	z += bias;
+
+	if(debug) std::cout << "Dot product with bias: " << z << std::endl;
+}
+void Perceptron::step_function() {
+	if (z >= 0) output = 1;
+	else output = 0;
+}
+
+void Perceptron::learn(std::vector<Input> data, int epochs, bool debug) {
+	for (int it = 0; it < epochs; it++) {
+
+		if(debug) std::cout << "Epoch: " << it << std::endl;
+
+		for (size_t i = 0; i < data.size(); i++) {
+
+			dot_product(data, i, debug);
+			step_function();
+
+			if(debug) std::cout << "Output: " << output << std::endl;
+
+			error = data[i].label - output;
+
+			if(debug) std::cout << "Label: " << data[i].label << std::endl;
+
+			if(debug) std::cout << "Error: " << error << std::endl;
+
+			for (int j = 0; j < 4; j++) {
+				weights[j] = weights[j] + eta * error * data[i].features[j];
+
+				if(debug) std::cout << "Weight number: " << j << " : " << weights[j] << std::endl;
+			}
+			bias = bias + eta * error;
+
+			if(debug) std::cout << "Bias: " << bias << std::endl;
+
+
+		}
+		z = 0.f;
+	}
+}
+
+void Perceptron::ask(std::vector<Input> data, int input_index, bool debug,std::string label[2]) {
+
+	dot_product(data, input_index, debug);
+	step_function();
+	if (debug) {
+	    std::cout << "Input number: " << input_index << std::endl;
+
+		for (size_t i = 0; i < data[input_index].features.size(); i++) {
+			std::cout << data[input_index].features[i] << " ";
+		}
+		std::cout << data[input_index].label << std::endl;
+	}
+	std::string result;
+	result = output == 1 ? label[0] : label[1];
+
+	std::cout << result << std::endl;
+}
+
+
+
+#include <iostream>
+#include "data.h"
+#include "perceptron.h"
+
+int main()
+{
+    //std::string filePath = argv[1];
+    //std::string label[2] = { argv[2], argv[3] };
+    //double eta = std::stod(argv[4]);
+    //int epochs = std::stoi(argv[5]);
+    //bool debug = std::stoi(argv[6]);
+
+    std::string filePath = "C:\\Users\\alber\\Desktop\\Projekty\\perceptron_iris\\assets\\iris.data";
+    std::string label[2] = { "Iris-setosa","Iris-versicolor" };
+
+    std::vector<Input> data = loadData(filePath,',');
+    
+
+    Perceptron perceptron(0.01, data);
+   
+    perceptron.learn(data, 100, false);
+
+    for (int j = 0; j < 100; j++) {
+        perceptron.ask(data, j, false, label);
+    }
+ 
+
+
+   return 0;
+}
