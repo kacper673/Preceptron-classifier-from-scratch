@@ -11,15 +11,15 @@ int main()
     //bool debug = std::stoi(argv[6]);
 
 
-    std::string filePath = "C:\\Users\\alber\\Desktop\\Projekty\\perceptron_iris\\assets\\iris.data";
-    std::string label[2] = { "Iris-setosa","Iris-versicolor" };
+    std::string filePath = "YOUR_FILE_PATH_HERE";
+    std::string label[2] = { "Iris-setosa","Iris-versicolor" };  //labels
 
     std::vector<Input> data = loadData(filePath,label,',');
     
 
-    Perceptron perceptron(0.01, data);
+    Perceptron perceptron(0.01, data);  //args - (learning rate, data file)
    
-    perceptron.learn(data, 100, false);
+    perceptron.learn(data, 100, false);  //args - (data file, epochs, show debug)
 
     for (int j = 0; j < 100; j++) {
         perceptron.ask(data, j, false, label);
