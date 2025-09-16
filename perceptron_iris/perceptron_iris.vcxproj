@@ -129,11 +129,13 @@
   <ItemGroup>
     <ClCompile Include="data.cpp" />
     <ClCompile Include="Perceptron.cpp" />
-    <ClCompile Include="perceptron_iris.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="rng.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="data.h" />
     <ClInclude Include="perceptron.h" />
+    <ClInclude Include="rng.h" />
     <ClInclude Include="variables.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

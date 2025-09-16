@@ -1,18 +1,18 @@
 #include "perceptron.h"
+#include "rng.h"
 
-Perceptron::Perceptron(double Eta,std::vector<Input> data) {
-	eta = Eta;
-
+void Perceptron::initialize_params(size_t n) {
 	srand(time(0));
 
-	for (size_t input_size = 0; input_size < data[0].features.size(); input_size++) { ///data[0] - pierwszy elemt przykladowy do zbadania rozmiaru wektora wag
+	for (size_t input_size = 0; input_size < n; input_size++) { 
 		double weight = ((double)rand() / RAND_MAX) * 2.0 - 1.0;
 		weights.push_back(weight);
 	}
 
 	bias = ((double)rand() / RAND_MAX) * 2.0 - 1.0;
-	
 }
+
+
 void Perceptron::dot_product(std::vector<Input> data, int input_index, bool debug) {
 	z = 0.f;
 	for (size_t i = 0; i < data[0].features.size(); i++) { //tak samo jak konstruktor, moge dac 4
@@ -24,14 +24,19 @@ void Perceptron::dot_product(std::vector<Input> data, int input_index, bool debu
 
 	if(debug) std::cout << "Dot product with bias: " << z << std::endl;
 }
+
+
 void Perceptron::step_function() {
 	if (z >= 0) output = 1;
 	else output = 0;
 }
 
-void Perceptron::learn(std::vector<Input> data, int epochs, bool debug) {
-	for (int it = 0; it < epochs; it++) {
 
+void Perceptron::learn(std::vector<Input> data, std::vector<Input> data_test, int epochs, bool debug) {
+
+	initialize_params(data[0].features.size());
+	for (int it = 0; it < epochs; it++) {
+		std::shuffle(data.begin(), data.end(),rng);
 		if(debug) std::cout << "Epoch: " << it << std::endl;
 
 		for (size_t i = 0; i < data.size(); i++) {
@@ -47,7 +52,7 @@ void Perceptron::learn(std::vector<Input> data, int epochs, bool debug) {
 
 			if(debug) std::cout << "Error: " << error << std::endl;
 
-			for (int j = 0; j < 4; j++) {
+			for (int j = 0; j < data[i].features.size(); j++) {
 				weights[j] = weights[j] + eta * error * data[i].features[j];
 
 				if(debug) std::cout << "Weight number: " << j << " : " << weights[j] << std::endl;
@@ -56,13 +61,13 @@ void Perceptron::learn(std::vector<Input> data, int epochs, bool debug) {
 
 			if(debug) std::cout << "Bias: " << bias << std::endl;
 
-
 		}
 		z = 0.f;
+		std::cout << "Epochs: " << it + 1 << " Accuracy: " << accuracy_score(data_test) << "\n";
 	}
 }
 
-void Perceptron::ask(std::vector<Input> data, int input_index, bool debug,std::string label[2]) {
+int Perceptron::ask(std::vector<Input> data, int input_index, bool debug) {
 
 	dot_product(data, input_index, debug);
 	step_function();
@@ -77,5 +82,19 @@ void Perceptron::ask(std::vector<Input> data, int input_index, bool debug,std::s
 	std::string result;
 	result = output == 1 ? label[0] : label[1];
 
-	std::cout << result << std::endl;
+	return output;
+	
+}
+
+
+float Perceptron::accuracy_score(std::vector<Input>& data) {
+
+	size_t data_size = data.size();
+	float n = 0;
+	for (size_t i = 0; i < data_size; i++) {
+		int y_ = ask(data, i, false);
+		if (data[i].label == y_) n++;
+	}
+	return n / static_cast<float>(data.size());
+
 }

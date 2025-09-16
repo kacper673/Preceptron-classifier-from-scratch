@@ -3,9 +3,12 @@
 #include <iostream>
 #include <vector>
 
+
 struct Input {
 	std::vector<double> features;
 	int label;
 };
+
+
 
 #endif 
