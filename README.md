@@ -1,4 +1,4 @@
-# 🧠 Perceptron Iris Classifier — From Scratch 
+# Perceptron Iris Classifier — From Scratch 
 
 This project demonstrates how a **perceptron** — one of the simplest neural models — can be built **entirely from scratch** in **C++**.  
 No machine learning libraries, no high-level frameworks: just basic data structures, loops, and arithmetic.
@@ -31,5 +31,4 @@ The program classifies samples from the **Iris dataset** into two categories by 
 
 ---
 
-## 📂 Project Structure
 
