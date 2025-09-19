@@ -28,8 +28,25 @@ The program classifies samples from the **Iris dataset** into two categories by 
 - **Accuracy Check**  
   - Counting correct predictions with explicit loops.  
   - No metrics libraries - only integer counters and division.
+ 
+- **Visualisation of Learning**
+  - Saving necessary data to csv
+  - Python script to process and plot the data
+  - Plotting in Matplotlib
 
 ## 📸 Example Screenshots
+
+- **Charts plotted with Matplotlib showig impoving accuracy over each epoch**
+  
+  <img width="776" height="592" alt="Zrzut ekranu 2025-09-19 233309" src="https://github.com/user-attachments/assets/0bca76f7-eab0-4132-95da-668f9bea4efa" />
+  
+---
+
+  <img width="774" height="580" alt="Zrzut ekranu 2025-09-19 233224" src="https://github.com/user-attachments/assets/fc0f8b97-0152-4dbf-934d-ab49d5d6968b" />
+
+---
+
+ 
 - **Accuracy after every epoch and final accuracy of the model**
 
 <img width="881" height="560" alt="image" src="https://github.com/user-attachments/assets/61d27500-4b91-4651-9e3d-c180383c8e68" />
